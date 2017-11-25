@@ -12,18 +12,27 @@ filesystem:
 
 # Custom configuration entries, settable via "device configuration"
 config_schema:
+  - ["i2c.enable", true]
+  - ["i2c.sda_gpio", 4]
+  - ["i2c.scl_gpio", 5]
   - ["app", "o", {title: "My app custom settings"}]
   - ["app.led_pin", "i", 2, {title: "built-in LED GPIO pin"}]
+  - ["app.temp_offset", "d", 0.1, {title: "temperature calibration offset"}]
+  - ["app.sample_frequency", "i", 60000, {title: "sensor sampling frquency, ms"}]
+  - ["app.mqtt_topic", "s", "home/dev/sensors", {title: "MQTT topic to publish sensor data"}]
+  - ["app.zone", "i", 0, {title: "sensor zone to report"}]
 
 # List of libraries used by this app, in order of initialisation
 libs:
   - origin: https://github.com/mongoose-os-libs/ca-bundle
+  - origin: https://github.com/mongoose-os-libs/i2c
   - origin: https://github.com/mongoose-os-libs/rpc-service-config
   - origin: https://github.com/mongoose-os-libs/rpc-service-fs
   - origin: https://github.com/mongoose-os-libs/rpc-uart
   - origin: https://github.com/mongoose-os-libs/wifi
   - origin: https://github.com/mongoose-os-libs/mjs
   - origin: https://github.com/mongoose-os-libs/prometheus-metrics
+  - origin: https://github.com/mongoose-os-libs/arduino-adafruit-bme280
   - origin: https://github.com/mongoose-os-libs/mqtt
 
 # Used by the mos tool to catch mos binaries incompatible with this file format
