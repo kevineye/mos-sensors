@@ -14,7 +14,7 @@ let bme = Adafruit_BME280.create();
 function readSensorData() {
   let v, data = {};
   v = bme.readTemperature();
-  if (v !== Adafruit_BME280.RES_FAIL) data.temperature = Math.round(v * 90 / 5 + 320)/10; // C -> F
+  if (v !== Adafruit_BME280.RES_FAIL) data.temperature = Math.round(v * 90 / 5 + 320 + temp_offset * 10)/10; // C -> F
   v = bme.readHumidity();
   if (v !== Adafruit_BME280.RES_FAIL && v > 0) data.humidity = Math.round(v); // % RH
   v = bme.readPressure();
@@ -33,7 +33,7 @@ function logSensorData() {
 
 if (bme.begin(0x76)) {
   RPC.addHandler('Sensors.Read', readSensorData);
-  RPC.addHandler('Sensors.Read', logSensorData);
+  RPC.addHandler('Sensors.Log', logSensorData);
   Timer.set(freq, Timer.REPEAT, logSensorData, null);
 } else {
   Log.error("no BME280 sensor found");
