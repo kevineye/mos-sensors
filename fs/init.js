@@ -9,7 +9,7 @@ let zone = Cfg.get('app.zone');
 let temp_offset = Cfg.get('app.temp_offset');
 let topic = Cfg.get('app.mqtt_topic');
 let freq = Cfg.get('app.sample_frequency');
-let bme = Adafruit_BME280.create();
+let bme = Adafruit_BME280.createI2C(0x76);
 
 function readSensorData() {
   let v, data = {};
@@ -31,7 +31,8 @@ function logSensorData() {
   return data;
 }
 
-if (bme.begin(0x76)) {
+if (bme.begin()) {
+  Log.error("initialized BME280 sensor");
   RPC.addHandler('Sensors.Read', readSensorData);
   RPC.addHandler('Sensors.Log', logSensorData);
   Timer.set(freq, Timer.REPEAT, logSensorData, null);
