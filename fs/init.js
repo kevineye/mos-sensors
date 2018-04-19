@@ -1,5 +1,5 @@
 load('api_rpc.js');
-load('api_arduino_bme280.js');
+load('api_bme280.js');
 load('api_timer.js');
 load('api_log.js');
 load('api_mqtt.js');
@@ -9,16 +9,16 @@ let zone = Cfg.get('app.zone');
 let temp_offset = Cfg.get('app.temp_offset');
 let topic = Cfg.get('app.mqtt_topic');
 let freq = Cfg.get('app.sample_frequency');
-let bme = Adafruit_BME280.createI2C(0x76);
+let bme = BME280.createI2C(0x76);
 
 function readSensorData() {
   let v, data = {};
-  v = bme.readTemperature();
-  if (v !== Adafruit_BME280.RES_FAIL) data.temperature = Math.round(v * 90 / 5 + 320 + temp_offset * 10)/10; // C -> F
-  v = bme.readHumidity();
-  if (v !== Adafruit_BME280.RES_FAIL && v > 0) data.humidity = Math.round(v); // % RH
-  v = bme.readPressure();
-  if (v !== Adafruit_BME280.RES_FAIL) data.pressure = Math.round(v * 2.9529983071445)/100; // hPa -> inHG
+  v = bme.readTemp();
+  if (v !== BME280.MGOS_BME280_ERROR) data.temperature = Math.round(v * 90 / 5 + 320 + temp_offset * 10)/10; // C -> F
+  v = bme.readHumid();
+  if (v !== BME280.MGOS_BME280_ERROR && v > 0) data.humidity = Math.round(v); // % RH
+  v = bme.readPress();
+  if (v !== BME280.MGOS_BME280_ERROR) data.pressure = Math.round(v * 2.9529983071445)/100; // hPa -> inHG
   if (zone > 0) data.zone = zone;
   return data;
 }
@@ -31,7 +31,7 @@ function logSensorData() {
   return data;
 }
 
-if (bme.begin()) {
+if (bme !== null) {
   Log.error("initialized BME280 sensor");
   RPC.addHandler('Sensors.Read', readSensorData);
   RPC.addHandler('Sensors.Log', logSensorData);
